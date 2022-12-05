@@ -1,4 +1,4 @@
-# PythonFinalProject
+# Twitter
  A repository for the python programming final project.
 
  Project description: [RO]
