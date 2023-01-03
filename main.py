@@ -49,8 +49,8 @@ while(version==0):
         version = 0
         
 tweets = tweepy.Cursor(api.search_tweets, q=hashtag_to_search, geocode=f'{44.426765},{26.102537},1000km').items(number_of_tweets)
-tweets_location = []
-
+location_from_tweeter = []
+location_by_user_location = []
 '''
 If the tweet has coordinates, use them, else use the coordinates of the place where the tweet was posted
 Use geocoder to get the coordinates of the location of the user and append them to the list tweets_location
@@ -71,9 +71,9 @@ for tweet in tweets:
                     print("")
                     xy=coord.latlng
                     if(version == 1):
-                        tweets_location.append([xy[1],xy[0]])
+                        location_by_user_location.append([xy[1],xy[0]])
                     else:
-                        tweets_location.append([xy[0],xy[1]])
+                        location_by_user_location.append([xy[0],xy[1]])
                 
                 except TypeError:
                     print("No coordinates")
@@ -85,12 +85,12 @@ for tweet in tweets:
             tweet_coord=[tweet.coordinates['coordinates'][0],tweet.coordinates['coordinates'][1]]
         print(tweet_coord)
         print("")
-        tweets_location.append(tweet_coord)
+        location_from_tweeter.append(tweet_coord)
 
 filename='map.html'
 if (version == 1):
 #this is a simple map that goes with geopandas
-    df = pd.DataFrame(tweets_location, columns=['lat', 'lon'])
+    df = pd.DataFrame(location_from_tweeter, columns=['lat', 'lon'])
     #print(df)
     geometry = [Point(xy) for xy in zip(df.lat, df.lon)]
     gdf = GeoDataFrame(df, geometry=geometry)
@@ -99,14 +99,15 @@ if (version == 1):
     #show the map
     plt.title('Tweets location')
     plt.show()
-
 else:
     '''
     Using folium to create a map with the coordinates of the tweets and then save it in a html file
     Using webbrowser to open the html file
     '''
     new_map = folium.Map()
-    for i in tweets_location:
-        new_map.add_child(folium.Marker(location=i,icon=folium.Icon(color='red')))
+    for i in location_from_tweeter:
+        new_map.add_child(folium.Marker(location=i,icon=folium.Icon(color='green')))
+    for j in location_by_user_location:
+        new_map.add_child(folium.Marker(location=j,icon=folium.Icon(color='red')))
     new_map.save(filename)
     webbrowser.open('file://' + os.path.realpath(filename))
