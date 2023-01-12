@@ -1,4 +1,3 @@
-from geopandas import GeoDataFrame
 from shapely.geometry import Point
 import matplotlib.pyplot as plt
 import geopandas as gpd
